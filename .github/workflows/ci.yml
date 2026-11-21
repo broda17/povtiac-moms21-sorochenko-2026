@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install tools
+        run: pip install numpy pytest ruff
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Build check (byte-compile sources)
+        run: python -m compileall -q src tests
+
+      - name: Smoke tests
+        run: pytest -q
+
+      - name: Placeholder quality gates
+        run: echo "Quality gates (покрытие, бюджет времени, регрессия метрик) будут добавлены на неделе 17"

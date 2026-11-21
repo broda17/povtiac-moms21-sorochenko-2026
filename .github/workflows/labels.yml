@@ -1,0 +1,38 @@
+name: Sync labels
+
+# Система меток хранится в репозитории (.github/labels.tsv) и создаётся автоматически
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/labels.tsv"
+      - ".github/workflows/labels.yml"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove default GitHub labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for l in "enhancement" "documentation" "duplicate" "good first issue" \
+                   "help wanted" "invalid" "question" "wontfix"; do
+            gh label delete "$l" --yes --repo "$GITHUB_REPOSITORY" || true
+          done
+
+      - name: Create or update project labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          while IFS=$'\t' read -r name color desc; do
+            [ -z "$name" ] && continue
+            gh label create "$name" --color "$color" --description "$desc" \
+              --force --repo "$GITHUB_REPOSITORY"
+          done < .github/labels.tsv

@@ -1,0 +1,17 @@
+[project]
+name = "bioprep"
+version = "0.1.0"
+description = "Биоинспирированная первичная обработка изображений: PCNN+PSO, ACO, ГА"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
